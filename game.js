@@ -10,7 +10,7 @@ let questionCounter = 0;
 let availableQuesions = [];
 
 let questions = [
-  {
+  /*{
     question: "Inside which HTML element do we put the JavaScript??",
     choice1: "<script>",
     choice2: "<javascript>",
@@ -35,7 +35,36 @@ let questions = [
     choice4: "alert('Hello World');",
     answer: 4,
   },
+  */
 ];
+
+fetch(
+  "https://quizapi.io/api/v1/questions?apiKey=D4fwC5JMzn3sbU7EI4SKm9tLTIXsZyUv2d6yzxCM&limit=10"
+)
+  .then((response) => {
+    return response.json();
+  })
+  .then((loadedQuestions) => {
+    console.log(loadedQuestions);
+    /*questions = loadedQuestions.results.map((loadedQuestion) => {
+      const formattedQuestion = {
+        question: loadedQuestion.question,
+      };
+
+      const answerChoices = [...loadedQuestion.incorrect_answers];
+      formattedQuestion.answer = Math.floor(Math.random() * 3) + 1;
+      answerChoices.splice(
+        formattedQuestion.answer - 1,
+        0,
+        loadedQuestion.correct_answer
+      );
+
+      answerChoices.forEach((choice, index) => {
+        formattedQuestion["choice" + (index + 1)] = choice;
+      });
+
+      return formattedQuestion;*/
+  });
 
 //CONSTANTS
 const CORRECT_BONUS = 10;
@@ -115,4 +144,4 @@ incrementScore = (num) => {
   scoreText.innerText = score;
 };
 
-startGame();
+//startGame();
