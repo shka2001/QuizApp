@@ -1,2 +1,2 @@
-const finalScore = document.getElementById("score");
-finalScore.innerText = finalScore;
+//const finalScore = document.getElementById("score");
+//finalScore.innerText = finalScore;

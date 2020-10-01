@@ -34,41 +34,12 @@ let questions = [
     choice3: "msg('Hello World');",
     choice4: "alert('Hello World');",
     answer: 4,
-  },
-  */
+  },*/
 ];
-
-fetch(
-  "https://quizapi.io/api/v1/questions?apiKey=D4fwC5JMzn3sbU7EI4SKm9tLTIXsZyUv2d6yzxCM&limit=10"
-)
-  .then((response) => {
-    return response.json();
-  })
-  .then((loadedQuestions) => {
-    console.log(loadedQuestions);
-    /*questions = loadedQuestions.results.map((loadedQuestion) => {
-      const formattedQuestion = {
-        question: loadedQuestion.question,
-      };
-
-      const answerChoices = [...loadedQuestion.incorrect_answers];
-      formattedQuestion.answer = Math.floor(Math.random() * 3) + 1;
-      answerChoices.splice(
-        formattedQuestion.answer - 1,
-        0,
-        loadedQuestion.correct_answer
-      );
-
-      answerChoices.forEach((choice, index) => {
-        formattedQuestion["choice" + (index + 1)] = choice;
-      });
-
-      return formattedQuestion;*/
-  });
 
 //CONSTANTS
 const CORRECT_BONUS = 10;
-const MAX_QUESTIONS = 3;
+const MAX_QUESTIONS = 10;
 
 startGame = () => {
   questionCounter = 0;
@@ -83,7 +54,9 @@ getNewQuestion = () => {
   //残りの問題数または、問題の最大数に達したらゲーム終わり。
   if (availableQuesions.length === 0 || questionCounter >= MAX_QUESTIONS) {
     //go to the end page
-    return window.location.assign("/end.html");
+    return window.location.assign(
+      "file:///C:/Users/shiho/Desktop/QuizApp/end.html"
+    );
   }
   questionCounter++;
   //???これでもいい？questionCounterText.innerText = questionCounter + "/" + MAX_QUESTIONS;
@@ -96,7 +69,10 @@ getNewQuestion = () => {
   //HTMLのdatasetの数字のところに選択肢を表示。
   choices.forEach((choice) => {
     const number = choice.dataset["number"];
-    choice.innerText = currentQuestion["choice" + number];
+    choice.innerText =
+      currentQuestion["answers"][
+        "answer_" + ["a", "b", "c", "d", "e", "f"][number]
+      ];
   });
 
   availableQuesions.splice(questionIndex, 1);
@@ -144,4 +120,11 @@ incrementScore = (num) => {
   scoreText.innerText = score;
 };
 
-//startGame();
+fetch(
+  "https://quizapi.io/api/v1/questions?apiKey=D4fwC5JMzn3sbU7EI4SKm9tLTIXsZyUv2d6yzxCM&difficulty=Easy&limit=10&tags=HTML"
+)
+  .then((response) => response.json())
+  .then((data) => {
+    questions = data;
+    startGame();
+  });
