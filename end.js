@@ -1,2 +1,2 @@
 //const finalScore = document.getElementById("score");
-//finalScore.innerText = finalScore;
+finalScore.innerText = localStorage.getItem("playerScore");

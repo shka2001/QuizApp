@@ -59,8 +59,9 @@ getNewQuestion = () => {
     );
   }
   questionCounter++;
-  //???これでもいい？questionCounterText.innerText = questionCounter + "/" + MAX_QUESTIONS;
-  questionCounterText.innerText = `${questionCounter}/${MAX_QUESTIONS}`;
+  //???これでもいい？
+  questionCounterText.innerText = questionCounter + "/" + MAX_QUESTIONS;
+  //questionCounterText.innerText = `${questionCounter}/${MAX_QUESTIONS}`;
 
   //問題をランダムに表示する。
   const questionIndex = Math.floor(Math.random() * availableQuesions.length);
@@ -73,6 +74,7 @@ getNewQuestion = () => {
       currentQuestion["answers"][
         "answer_" + ["a", "b", "c", "d", "e", "f"][number]
       ];
+    choice.parentElement.classList.remove("choosen");
   });
 
   availableQuesions.splice(questionIndex, 1);
@@ -81,42 +83,43 @@ getNewQuestion = () => {
 
 //Display Feedback for Correct/Incorrect Answers
 //正解でなければ、リターンする。
+
 choices.forEach((choice) => {
   choice.addEventListener("click", (e) => {
-    if (!acceptingAnswers) return;
-
-    acceptingAnswers = false;
     const selectedChoice = e.target;
-    const selectedAnswer = selectedChoice.dataset["number"];
-    console.log(selectedAnswer);
-    /*
-    const classToApply = "incorrect";
-    if (selectedAnswer == currentQuestion.answer) {
-        classToApply = "correct";
-    }
-    */
-    //上のをワンラインで書くとこうなる。
-    const classToApply =
-      selectedAnswer == currentQuestion.answer ? "correct" : "incorrect";
 
-    //正解ならば１０ポイントをプラスする。
-    if (classToApply === "correct") {
-      incrementScore(CORRECT_BONUS);
-    }
-
-    selectedChoice.parentElement.classList.add(classToApply);
-
-    //タイムリミットの時間を１０００秒にする。
-    setTimeout(() => {
-      selectedChoice.parentElement.classList.remove(classToApply);
-      //新しい問題を表示する。
-      getNewQuestion();
-    }, 1000);
+    selectedChoice.parentElement.classList.toggle("choosen");
   });
+});
+
+let checkAnswersBtn = document.getElementById("checkAnswersBtn");
+checkAnswersBtn.addEventListener("click", function (e) {
+  let allChoices = Array.from(
+    document.getElementsByClassName("choice-container")
+  );
+  console.log(allChoices);
+  for (let check = 0; check < allChoices.length; check++) {
+    const choosen = allChoices[check].classList.contains("choosen");
+    const correctAnswer =
+      currentQuestion["correct_answers"][
+        "answer_" + ["a", "b", "c", "d", "e", "f"][check] + "_correct"
+      ] == "true";
+    console.log(choosen);
+    console.log(correctAnswer);
+
+    if (choosen != correctAnswer) {
+      getNewQuestion();
+      return;
+    }
+  }
+  incrementScore(10);
+  getNewQuestion();
 });
 //正解の場合スコアを１０ポイントずつ足していく。
 incrementScore = (num) => {
   score += num;
+  localStorage.setItem("playerScore", score);
+
   scoreText.innerText = score;
 };
 
