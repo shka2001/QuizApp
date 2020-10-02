@@ -39,11 +39,12 @@ let questions = [
 
 //CONSTANTS
 const CORRECT_BONUS = 10;
-const MAX_QUESTIONS = 10;
+const MAX_QUESTIONS = localStorage.getItem("questionsNumber");
 
 startGame = () => {
   questionCounter = 0;
   score = 0;
+  localStorage.setItem("playerScore", 0);
   availableQuesions = [...questions];
   //console.log(availableQuesions);
   getNewQuestion();
