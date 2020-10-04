@@ -56,9 +56,7 @@ getNewQuestion = () => {
   //残りの問題数または、問題の最大数に達したらゲーム終わり。
   if (availableQuesions.length === 0 || questionCounter >= MAX_QUESTIONS) {
     //go to the end page
-    return window.location.assign(
-      "file:///C:/Users/shiho/Desktop/QuizApp/end.html"
-    );
+    return window.location.assign("end.html");
   }
   questionCounter++;
   //???これでもいい？

@@ -5,5 +5,5 @@ playBtn.addEventListener("click", function (e) {
   let questionsNumber = document.getElementById("questionsNumber").value;
   localStorage.setItem("questionsNumber", questionsNumber);
   console.log(localStorage);
-  window.location.assign("file:///C:/Users/shiho/Desktop/QuizApp/game.html");
+  window.location.assign("game.html");
 });
