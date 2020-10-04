@@ -11,8 +11,6 @@ class Game {
     this.questionCounter = 1;
     this.availableQuesions = [];
 
-    this.questions = [];
-
     //CONSTANTS
     this.CORRECT_BONUS = 10;
     this.MAX_QUESTIONS = localStorage.getItem("questionsNumber");
@@ -59,15 +57,15 @@ class Game {
     )
       .then((response) => response.json())
       .then((data) => {
-        this.questions = data;
+        this.availableQuesions = data;
         this.startGame();
       });
   }
 
   endGame() {
     for (let i = 0; i < this.userAnswers.length; i++) {
-      const allChoices = this.userAnswers[i];
-      const allAnswers = this.availableQuesions[i]["correct_answers"];
+      const allChoices = this.userAnswers[i]; // [true, false, false, false]
+      const allAnswers = this.availableQuesions[i]["correct_answers"]; // [true, false, false, false]
       console.log(allChoices);
 
       let isCorrect = this.correct(allChoices, allAnswers);
@@ -82,7 +80,6 @@ class Game {
     this.questionCounter = 1;
     this.score = 0;
     localStorage.setItem("playerScore", 0);
-    this.availableQuesions = [...this.questions];
     //console.log(availableQuesions);
     this.getNewQuestion();
   }
