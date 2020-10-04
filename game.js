@@ -8,7 +8,7 @@ class Game {
     this.currentQuestion = {};
     this.acceptingAnswers = false;
     this.score = 0;
-    this.questionCounter = 0;
+    this.questionCounter = 1;
     this.availableQuesions = [];
 
     this.questions = [];
@@ -16,6 +16,8 @@ class Game {
     //CONSTANTS
     this.CORRECT_BONUS = 10;
     this.MAX_QUESTIONS = localStorage.getItem("questionsNumber");
+
+    this.userAnswers = [];
 
     //Display Feedback for Correct/Incorrect Answers
     //正解でなければ、リターンする。
@@ -25,24 +27,30 @@ class Game {
         const selectedChoice = e.target;
 
         selectedChoice.parentElement.classList.toggle("choosen");
+
+        this.userAnswers[this.questionCounter - 1] = Array.from(
+          document.getElementsByClassName("choice-container")
+        ).map((c) => {
+          return c.classList.contains("choosen");
+        });
       });
     });
 
     let checkAnswersBtn = document.getElementById("checkAnswersBtn");
     checkAnswersBtn.addEventListener("click", (e) => {
-      let allChoices = Array.from(
-        document.getElementsByClassName("choice-container")
-      );
-      console.log(allChoices);
+      this.endGame();
+    });
 
-      let isCorrect = this.correct(
-        allChoices,
-        this.currentQuestion["correct_answers"]
-      );
-      if (isCorrect) {
-        this.incrementScore(10);
-      }
+    let goBackBtn = document.getElementById("goBackBtn");
+    goBackBtn.addEventListener("click", (e) => {
+      //this.goBack(window.history.back());
+      this.questionCounter--;
+      this.getNewQuestion();
+    });
 
+    let goForwardBtn = document.getElementById("goForwardBtn");
+    goForwardBtn.addEventListener("click", (e) => {
+      this.questionCounter++;
       this.getNewQuestion();
     });
 
@@ -56,8 +64,22 @@ class Game {
       });
   }
 
+  endGame() {
+    for (let i = 0; i < this.userAnswers.length; i++) {
+      const allChoices = this.userAnswers[i];
+      const allAnswers = this.availableQuesions[i]["correct_answers"];
+      console.log(allChoices);
+
+      let isCorrect = this.correct(allChoices, allAnswers);
+      if (isCorrect) {
+        this.incrementScore(10);
+      }
+    }
+    return window.location.assign("end.html");
+  }
+
   startGame() {
-    this.questionCounter = 0;
+    this.questionCounter = 1;
     this.score = 0;
     localStorage.setItem("playerScore", 0);
     this.availableQuesions = [...this.questions];
@@ -67,7 +89,7 @@ class Game {
 
   correct(allChoices, correctAnswers) {
     for (let check = 0; check < allChoices.length; check++) {
-      const choosen = allChoices[check].classList.contains("choosen");
+      const choosen = allChoices[check];
       const correctAnswer =
         correctAnswers[
           "answer_" + ["a", "b", "c", "d", "e", "f"][check] + "_correct"
@@ -87,12 +109,12 @@ class Game {
     //残りの問題数または、問題の最大数に達したらゲーム終わり。
     if (
       this.availableQuesions.length === 0 ||
-      this.questionCounter >= this.MAX_QUESTIONS
+      this.questionCounter > this.MAX_QUESTIONS
     ) {
       //go to the end page
-      return window.location.assign("end.html");
+      this.endGame();
+      return;
     }
-    this.questionCounter++;
     //???これでもいい？
     this.questionCounterText.innerText =
       this.questionCounter + "/" + this.MAX_QUESTIONS;
