@@ -11,6 +11,7 @@ let availableQuesions = [];
 
 let questions = [
   /*{
+    hello
     question: "Inside which HTML element do we put the JavaScript??",
     choice1: "<script>",
     choice2: "<javascript>",
