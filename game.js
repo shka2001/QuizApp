@@ -3,7 +3,8 @@ class Game {
     this.question = document.getElementById("question");
     this.choices = Array.from(document.getElementsByClassName("choice-text"));
     this.questionCounterText = document.getElementById("questionCounter");
-    this.scoreText = document.getElementById("score");
+    this.scoreText = document.getElementById("UsernameInpt");
+    this.scoreText.innerText = localStorage.getItem("username");
 
     this.currentQuestion = {};
     this.acceptingAnswers = false;
@@ -136,8 +137,6 @@ class Game {
   incrementScore(num) {
     this.score += num;
     localStorage.setItem("playerScore", this.score);
-
-    this.scoreText.innerText = this.score;
   }
 }
 
