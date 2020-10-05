@@ -1,52 +1,64 @@
+//オブジェクト指向でGameのオブジェクト(エッグマシン)を作った。
 class Game {
+  //作り方？
   constructor() {
+    //材料？ボックスを作る。
     this.question = document.getElementById("question");
     this.choices = Array.from(document.getElementsByClassName("choice-text"));
     this.questionCounterText = document.getElementById("questionCounter");
-    this.scoreText = document.getElementById("UsernameInpt");
-    this.scoreText.innerText = localStorage.getItem("username");
+    //ユーザーネームのインプットボックスを作り、IDの空欄部分の要素を得る。
+    this.usernameText = document.getElementById("UsernameInpt");
+    //ローカルストレージからインプットされたユーザー名をHTML内に表示する。
+    this.usernameText.innerText = localStorage.getItem("username");
 
+    //???
     this.currentQuestion = {};
+    //最初の選択はFalseにしておく。
     this.acceptingAnswers = false;
     this.score = 0;
     this.questionCounter = 1;
     this.availableQuesions = [];
 
-    //CONSTANTS
+    //CONSTANTS?正解お場合は、１０ポイント。
     this.CORRECT_BONUS = 10;
+    //問題数のインプットをストレージから得る。
     this.MAX_QUESTIONS = localStorage.getItem("questionsNumber");
 
+    //ユーザーの回答を置く場所。
     this.userAnswers = [];
 
-    //Display Feedback for Correct/Incorrect Answers
-    //正解でなければ、リターンする。
-
+    //選択肢をクリックしたら、以下のことが起こる。
     this.choices.forEach((choice) => {
       choice.addEventListener("click", (e) => {
         const selectedChoice = e.target;
 
+        //クリックとアンクリックをtpggleでできるようにし、クリックした場合は、choosenをHTML内に追加する。
         selectedChoice.parentElement.classList.toggle("choosen");
 
+        //ユーザーが選択した回答の配列を作る。
         this.userAnswers[this.questionCounter - 1] = Array.from(
           document.getElementsByClassName("choice-container")
         ).map((c) => {
           return c.classList.contains("choosen");
+          //[]
         });
       });
     });
 
+    //Submitのボタンを押したら、以下のことが起こる。
     let checkAnswersBtn = document.getElementById("checkAnswersBtn");
     checkAnswersBtn.addEventListener("click", (e) => {
       this.endGame();
     });
 
+    //GoBackのボタンを押したら、以下のことが起こる。
     let goBackBtn = document.getElementById("goBackBtn");
     goBackBtn.addEventListener("click", (e) => {
-      //this.goBack(window.history.back());
       this.questionCounter--;
       this.getNewQuestion();
     });
 
+    //GoForwardのボタンを押したら、以下のことが起こる。
     let goForwardBtn = document.getElementById("goForwardBtn");
     goForwardBtn.addEventListener("click", (e) => {
       this.questionCounter++;
@@ -85,6 +97,7 @@ class Game {
     this.getNewQuestion();
   }
 
+  //Display Feedback for Correct/Incorrect Answers
   correct(allChoices, correctAnswers) {
     for (let check = 0; check < allChoices.length; check++) {
       const choosen = allChoices[check];
@@ -118,7 +131,7 @@ class Game {
       this.questionCounter + "/" + this.MAX_QUESTIONS;
     //questionCounterText.innerText = `${questionCounter}/${MAX_QUESTIONS}`;
 
-    //問題をランダムに表示する。
+    //
     this.currentQuestion = this.availableQuesions[this.questionCounter - 1];
     this.question.innerText = this.currentQuestion.question;
     //HTMLのdatasetの数字のところに選択肢を表示。
