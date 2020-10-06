@@ -1,35 +1,35 @@
-//オブジェクト指向でGameのオブジェクト(エッグマシン)を作った。
-//I made a Game object (egg machine) in an object-oriented manner.
+//オブジェクト指向でGame(egg machine)のオブジェクト(エッグマシン)を作った。
+//I made a Game class in an object-oriented manner.
 class Game {
   //作り方？
-  //How to make?
+  //Constructor is a function that runs when creating the object.
   constructor() {
     //材料？ボックスを作る。
-    //material? Make a box.
+    // Set variables for object.
     this.question = document.getElementById("question");
     this.choices = Array.from(document.getElementsByClassName("choice-text"));
     this.questionCounterText = document.getElementById("questionCounter");
     //ユーザーネームのインプットボックスを作り、IDの空欄部分の要素を得る。
-    //Create an input box for the user name and get the blank part of the ID.
+    //Create an variable for the user name input element
     this.usernameText = document.getElementById("UsernameInpt");
     //ローカルストレージからインプットされたユーザー名をHTML内に表示する。
-    //Display the user name input from the local storage in HTML.
+    //Display the user name input taken from the local storage in HTML.
     this.usernameText.innerText = localStorage.getItem("username");
 
-    //???
-    this.currentQuestion = {};
-    //最初の選択はFalseにしておく。
-    //Leave False as the first choice.
-    this.acceptingAnswers = false;
+    // User score
     this.score = 0;
+
+    // Current question index
     this.questionCounter = 1;
+
+    // All fetched questions from the API
     this.availableQuesions = [];
 
     //CONSTANTS?１０ポインのボックス。
-    //A box of 10 points.
+    // Amount of points when correct
     this.CORRECT_BONUS = 10;
     //問題数のインプットをストレージから得る。
-    //Get the input of the number of problems from the storage.
+    //Get the input of the number of questions (the user wants) from the storage.
     this.MAX_QUESTIONS = localStorage.getItem("questionsNumber");
 
     //ユーザーの回答を置く場所。
@@ -37,17 +37,18 @@ class Game {
     this.userAnswers = [];
 
     //選択肢をクリックしたら、以下のことが起こる。
-    //When you click on an option, the following happens:
+    //When you click on an option, the following happens (loop through each choice element and add click listener):
     this.choices.forEach((choice) => {
       choice.addEventListener("click", (e) => {
         const selectedChoice = e.target;
 
         //クリックとアンクリックをtpggleでできるようにし、クリックした場合は、choosenをHTML内に追加する。
-        //Allow tpggle to click and unclick, and if clicked, add choosen in HTML.
+        // switch between "choosen" and not
         selectedChoice.parentElement.classList.toggle("choosen");
 
         //ユーザーが選択した回答の配列を作る。
-        //Create an array of user-selected answers.
+        //Create an array of user-selected answers. [[true, false, false, false], [true, false, false, false]]
+        // For every element pick out if it has the "choosen" css class.
         this.userAnswers[this.questionCounter - 1] = Array.from(
           document.getElementsByClassName("choice-container")
         ).map((c) => {
@@ -69,6 +70,9 @@ class Game {
     //When you press the GoBack button, the following happens:
     let goBackBtn = document.getElementById("goBackBtn");
     goBackBtn.addEventListener("click", (e) => {
+      if (this.questionCounter == 1) {
+        return;
+      }
       this.questionCounter--;
       this.getNewQuestion();
     });
@@ -84,7 +88,7 @@ class Game {
     fetch(
       "https://quizapi.io/api/v1/questions?apiKey=D4fwC5JMzn3sbU7EI4SKm9tLTIXsZyUv2d6yzxCM&difficulty=Easy&limit=10&tags=HTML"
     )
-      .then((response) => response.json())
+      .then((response) => response.json()) // convert string "fasdfasdfas" to object {fdsfafsd: true}
       .then((data) => {
         this.availableQuesions = data;
         this.startGame();
@@ -94,7 +98,7 @@ class Game {
 
   endGame() {
     //ユーザーが選択した問題数の数だけforループでユーザーの回答とソースからの解答の配列を作る。
-    //Create an array of user's answers and answers from the source in a for loop for the number of questions selected by the user.
+    //Load arrays of user's answers and answers from the source in a for loop for the number of questions selected by the user.
     for (let i = 0; i < this.userAnswers.length; i++) {
       const allChoices = this.userAnswers[i]; // [true, false, false, false]
       const allAnswers = this.availableQuesions[i]["correct_answers"]; // [true, false, false, false]
@@ -108,18 +112,21 @@ class Game {
       console.log(allChoices);
       */
 
+      // Check answers
       let isCorrect = this.correct(allChoices, allAnswers);
       //正解なら１０ポイントをプラスする。
       if (isCorrect) {
-        this.incrementScore(10);
+        // Give bonus
+        this.incrementScore(this.CORRECT_BONUS);
       }
     }
     //全てが終わったら、スコアを表示する。
-    //If the answer is correct, add 10 points.
+    // End game by going to end page
     return window.location.assign("end.html");
   }
 
   startGame() {
+    // Set default values
     this.questionCounter = 1;
     this.score = 0;
     localStorage.setItem("playerScore", 0);
@@ -127,7 +134,7 @@ class Game {
   }
 
   //ユーザーの回答とソースからの解答の配列を比較して正解かどうかをチェックする。
-  //Check if the answer is correct by comparing the user's answer with the array of answers from the source.
+  //Check if the answer is correct by comparing the user's answer array with the array of answers from the source.
   correct(allChoices, correctAnswers) {
     for (let check = 0; check < allChoices.length; check++) {
       const choosen = allChoices[check];
@@ -139,8 +146,9 @@ class Game {
       console.log(correctAnswer);
 
       if (choosen != correctAnswer) {
+        //true and false or false and true = true
         return false;
-      }
+      } // true and true or false and false = false
     }
     return true;
   }
@@ -168,19 +176,16 @@ class Game {
     this.currentQuestion = this.availableQuesions[this.questionCounter - 1];
     this.question.innerText = this.currentQuestion.question;
     //HTMLのdatasetの数字のところに選択肢を表示。
-    //Show your choices at the numbers in the HTML dataset.
+    //Show your choices
     this.choices.forEach((choice) => {
       const number = choice.dataset["number"];
       choice.innerText = this.currentQuestion["answers"][
         "answer_" + ["a", "b", "c", "d", "e", "f"][number]
       ];
       //<div class="choice-container choosen">のようにchoosenをクラスの中に追加する。
-      //Add choosen in the class like <div class = "choice-container choosen">.
+      //Remove choosen in the class like <div class = "choice-container choosen">.
       choice.parentElement.classList.remove("choosen");
     });
-    //ユーザーの回答とソースからの解答の配列がどちらもTrueなら以下へ進む。
-    //If both the user's answer and the array of answers from the source are True, proceed below.
-    this.acceptingAnswers = true;
   }
 
   //正解の場合スコアを１０ポイントずつ足していく。
